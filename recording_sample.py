@@ -27,6 +27,10 @@ def spur():
     return fragment(key, 'spur-whole', 'spur', 'spur-row', 'whole', 0, 1, [5])
 
 
+def retest(key, event_id, line_id, row_id, start, total, values, *, shift_id=SHIFT):
+    return fragment(key, event_id, line_id, row_id, 'retest', start, total, values, shift_id=shift_id)
+
+
 def rollover_events(*, selected='B', order=('A', 'B'), b_value=13, total=2, candidate_start=1):
     old_key = AttemptKey(RECORDING, 'old-roll', 0, 2)
     head = fragment(old_key, 'bend-head', 'bend', 'bend-row', 'head', 0, total, [7])

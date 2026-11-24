@@ -57,7 +57,7 @@ def validate_fragment(attempt: BufferAttempt) -> ValidatedFragment:
     line_id = require_identifier(fields['line'], 'fragment line')
     row_id = require_identifier(fields['row'], 'fragment row')
     kind = fields['kind']
-    if kind not in ('whole', 'head', 'candidate'):
+    if kind not in ('whole', 'head', 'candidate', 'retest'):
         raise ValueError('invalid fragment kind')
     start, total, values = fields['start'], fields['total'], fields['values']
     if type(start) is not int or type(total) is not int or total < 1 or start < 0:

@@ -45,6 +45,8 @@ def stage_fragment(db: sqlite3.Connection, shift_id: str, event_id: str) -> Stag
     if not db.in_transaction:
         raise RuntimeError('staging requires the custody transaction')
     fragment = load_receipted_fragment(db, shift_id, event_id)
+    if fragment.kind == 'retest':
+        raise ValueError('retest pieces back errata and must not be staged for publication')
     require_line(get_shift(db, shift_id).roster, fragment.line_id)
     expected = StagedFragment(
         shift_id, event_id, fragment.attempt.key, fragment.line_id, fragment.row_id, fragment.kind

@@ -1,6 +1,7 @@
 import sqlite3
 from dataclasses import dataclass
 
+from archive.errata import effective_line_state
 from archive.publication import Publication, PublicationReceipt, get_publication
 from device.seal import SealRecord
 from review.manifest import ShiftManifest, get_manifest
@@ -41,6 +42,20 @@ def read(db: sqlite3.Connection, number: str) -> LineDelivery | HandoverDelivery
         issued = db.execute('SELECT 1 FROM handover_issues WHERE number = ?', (number,)).fetchone()
         if issued is None:
             raise LookupError(f'unknown or unsigned handover: {number}')
+        revised = db.execute(
+            'SELECT 1 FROM revised_manifests WHERE number = ?', (number,)
+        ).fetchone()
+        if revised is not None:
+            manifest = get_manifest(db, number)
+            lines = []
+            for entry in manifest.entries:
+                root_delivery = _line_delivery(get_publication(db, entry.publication_number))
+                state = effective_line_state(db, number, entry.line_id)
+                lines.append(LineDelivery(
+                    state.shift_id, state.line_id, state.row_id, state.readings,
+                    state.provenance, entry.totals, root_delivery.receipt, root_delivery.seal,
+                ))
+            return HandoverDelivery(manifest, tuple(lines))
         manifest = get_manifest(db, number)
         lines = tuple(
             _line_delivery(get_publication(db, entry.publication_number), entry.totals)

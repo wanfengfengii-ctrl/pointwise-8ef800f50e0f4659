@@ -18,6 +18,7 @@ def connect_station(path) -> sqlite3.Connection:
     from archive.staging import STAGING_SCHEMA
     from handover.accept import ACCEPT_SCHEMA
     from handover.issue import ISSUE_SCHEMA
+    from handover.revision import REISSUE_SCHEMA
     from intake.custody import CUSTODY_SCHEMA
     from review.manifest import MANIFEST_SCHEMA
     from shift.close_shift import CLOSURE_SCHEMA
@@ -28,7 +29,7 @@ def connect_station(path) -> sqlite3.Connection:
         db.execute('PRAGMA foreign_keys = ON')
         schemas = (
             SHIFT_SCHEMA, CUSTODY_SCHEMA, STAGING_SCHEMA, PUBLICATION_SCHEMA,
-            MANIFEST_SCHEMA, ISSUE_SCHEMA, ACCEPT_SCHEMA, CLOSURE_SCHEMA,
+            MANIFEST_SCHEMA, ISSUE_SCHEMA, ACCEPT_SCHEMA, REISSUE_SCHEMA, CLOSURE_SCHEMA,
         )
         db.executescript('\n'.join(('BEGIN IMMEDIATE;', *schemas, 'COMMIT;')))
     except BaseException:
